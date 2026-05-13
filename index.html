@@ -15,6 +15,7 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 .cell.given{cursor:default}
 .cell.correct{background:#dceccf;color:#314728}
 .cell.error{background:#f1b6a8;color:#5c1f16}
+.cell.same-number{background:#f7edbd;}
 #pad{max-width:280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .pad-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#fffdf8,#ece0c5);color:#3e2d1f;border-radius:12px;height:58px;font-size:1.5rem;font-weight:700;cursor:pointer;font-family:Georgia,"Times New Roman",serif}
 #status{margin-top:18px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(90,66,41,.25);text-align:center;font-weight:700;min-height:24px}
@@ -100,6 +101,7 @@ var cells=document.querySelectorAll(".cell"),i;
 for(i=0;i<cells.length;i++){
 cells[i].classList.remove("selected");
 cells[i].classList.remove("related");
+cells[i].classList.remove("same-number");
 }
 }
 
@@ -118,6 +120,19 @@ if(rr===r&&cc===c){cell.classList.remove("related");cell.classList.add("selected
 }
 }
 
+function highlightSameNumber(n){
+  clearHighlights();
+
+  var cells=document.querySelectorAll(".cell");
+
+  for(var i=0;i<cells.length;i++){
+    if(cells[i].textContent === n){
+      cells[i].classList.add("same-number");
+    }
+  }
+
+  status.textContent = "Números " + n + " resaltados.";
+}
 function isGiven(r,c){
 return puzzle[r].charAt(c)!=="0";
 }
@@ -139,11 +154,10 @@ board.addEventListener("click",function(e){
 var cell=e.target.closest(".cell");if(!cell)return;
 var r=parseInt(cell.getAttribute("data-r"),10);
 var c=parseInt(cell.getAttribute("data-c"),10);
-if(isGiven(r,c)){
-status.textContent="Esa cifra ya viene dada.";
-selected=null;
-clearHighlights();
-return;
+if(values[r][c] !== ""){
+  selected = null;
+  highlightSameNumber(values[r][c]);
+  return;
 }
 selected={r:r,c:c};
 highlight(r,c);
