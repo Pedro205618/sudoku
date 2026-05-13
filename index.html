@@ -46,7 +46,7 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 <body>
 <div id="sudoku">
 <h2>Sudoku literario</h2>
-<p class="sub">Nivel fácil · Selecciona una casilla y elige un número.</p>
+<p class="sub" id="subtitle">Elige un nivel de dificultad.</p>
 <div class="levels">
   <button class="level-btn" data-level="easy" type="button">Fácil</button>
   <button class="level-btn" data-level="medium" type="button">Medio</button>
@@ -66,7 +66,11 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 </div>
 <script>
 (function(){
-var board=document.getElementById("board"),pad=document.getElementById("pad"),status=document.getElementById("status"),reward=document.getElementById("reward");
+var board=document.getElementById("board"),
+    pad=document.getElementById("pad"),
+    status=document.getElementById("status"),
+    reward=document.getElementById("reward"),
+    subtitle=document.getElementById("subtitle");
 var selected=null,values=[];
 
 var PUZZLES = {
@@ -183,8 +187,15 @@ pad.innerHTML=html;
 
 function loadLevel(level){
   currentLevel = level;
+
   puzzle = PUZZLES[currentLevel].puzzle;
   solution = PUZZLES[currentLevel].solution;
+
+  subtitle.textContent =
+    "Nivel " +
+    PUZZLES[currentLevel].name.toLowerCase() +
+    " · Selecciona una casilla y elige un número.";
+
   buildBoard();
 }
 
