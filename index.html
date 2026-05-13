@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudoku literario</title>
+<style>
+body{margin:0;padding:16px;background:#f4efe6;box-sizing:border-box;font-family:Georgia,"Times New Roman",serif}
+#sudoku{max-width:760px;margin:0 auto;padding:22px;border:2px solid #9b7a4f;border-radius:18px;background:linear-gradient(180deg,#f8f1df 0%,#ead8b7 100%);color:#3e2d1f;box-shadow:0 10px 28px rgba(60,40,20,.18)}
+h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:0 0 20px;color:#6b5a48;font-style:italic}
+#board{width:min(92vw,540px);aspect-ratio:1/1;margin:0 auto 18px auto;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);border:3px solid #5b4229;background:#fffdf8;box-sizing:border-box}
+.cell{border:1px solid rgba(90,66,41,.28);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;cursor:pointer;user-select:none;transition:background .15s,color .15s;box-sizing:border-box}
+.cell:nth-child(3n){border-right:2px solid #5b4229}.cell:nth-child(9n){border-right:none}.row-end{border-bottom:2px solid #5b4229!important}
+.cell.selected{background:#d7e7f7}.cell.related{background:#eef5fc}
+.cell.given{background:#e6ddc8;color:#3e2d1f;cursor:default}
+.cell.correct{background:#dceccf;color:#314728}
+.cell.error{background:#f1b6a8;color:#5c1f16}
+#pad{max-width:280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pad-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#fffdf8,#ece0c5);color:#3e2d1f;border-radius:12px;height:58px;font-size:1.5rem;font-weight:700;cursor:pointer;font-family:Georgia,"Times New Roman",serif}
+#status{margin-top:18px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(90,66,41,.25);text-align:center;font-weight:700;min-height:24px}
+#reward{display:none;margin-top:18px;padding:16px;border-radius:14px;background:rgba(226,241,215,.88);border:1px solid rgba(124,156,105,.5);line-height:1.45;text-align:center}
+.actions{margin-top:14px;display:flex;justify-content:center}
+.action-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#a67b45,#7f5c34);color:#fff8e8;padding:9px 16px;border-radius:999px;font-family:Georgia,"Times New Roman",serif;font-weight:700;cursor:pointer}
+@media(max-width:640px){body{padding:8px}#sudoku{padding:12px}#board{width:100%;max-width:520px}.cell{font-size:1.05rem}.pad-btn{height:52px;font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div id="sudoku">
+<h2>Sudoku literario</h2>
+<p class="sub">Nivel fácil · Selecciona una casilla y elige un número.</p>
+<div id="board"></div>
+<div id="pad"></div>
+<div id="status">Selecciona una casilla vacía y luego un número.</div>
+<div id="reward">
+  <p><strong>¡Muy bien! Has completado el sudoku.</strong></p>
+  <p>“La atención es la forma más rara y pura de generosidad.”</p>
+  <p><em>Simone Weil</em></p>
+</div>
+<div class="actions">
+  <button class="action-btn" id="resetBtn" type="button">Comenzar de nuevo</button>
+</div>
+</div>
+<script>
+(function(){
+var board=document.getElementById("board"),pad=document.getElementById("pad"),status=document.getElementById("status"),reward=document.getElementById("reward");
+var selected=null,values=[];
+
+var puzzle=[
+"530070000",
+"600195000",
+"098000060",
+"800060003",
+"400803001",
+"700020006",
+"060000280",
+"000419005",
+"000080079"
+];
+
+var solution=[
+"534678912",
+"672195348",
+"198342567",
+"859761423",
+"426853791",
+"713924856",
+"961537284",
+"287419635",
+"345286179"
+];
+
+function buildBoard(){
+var html="",r,c,extra,n;
+values=[];
+for(r=0;r<9;r++){
+values[r]=[];
+for(c=0;c<9;c++){
+n=puzzle[r].charAt(c);
+values[r][c]=n==="0"?"":n;
+extra="";
+if(r===2||r===5){extra+=" row-end";}
+if(n!=="0"){extra+=" given";}
+html+='<div class="cell'+extra+'" data-r="'+r+'" data-c="'+c+'">'+(n==="0"?"":n)+'</div>';
+}}
+board.innerHTML=html;
+reward.style.display="none";
+selected=null;
+clearHighlights();
+status.textContent="Selecciona una casilla vacía y luego un número.";
+}
+
+function buildPad(){
+var html="",i;
+for(i=1;i<=9;i++){html+='<button class="pad-btn" data-n="'+i+'">'+i+'</button>';}
+pad.innerHTML=html;
+}
+
+function clearHighlights(){
+var cells=document.querySelectorAll(".cell"),i;
+for(i=0;i<cells.length;i++){
+cells[i].classList.remove("selected");
+cells[i].classList.remove("related");
+}
+}
+
+function highlight(r,c){
+clearHighlights();
+var cells=document.querySelectorAll(".cell"),i,cell,rr,cc,sameRow,sameCol,sameBox;
+for(i=0;i<cells.length;i++){
+cell=cells[i];
+rr=parseInt(cell.getAttribute("data-r"),10);
+cc=parseInt(cell.getAttribute("data-c"),10);
+sameRow=rr===r;
+sameCol=cc===c;
+sameBox=Math.floor(rr/3)===Math.floor(r/3)&&Math.floor(cc/3)===Math.floor(c/3);
+if(sameRow||sameCol||sameBox){cell.classList.add("related");}
+if(rr===r&&cc===c){cell.classList.remove("related");cell.classList.add("selected");}
+}
+}
+
+function isGiven(r,c){
+return puzzle[r].charAt(c)!=="0";
+}
+
+function isComplete(){
+for(var r=0;r<9;r++){
+for(var c=0;c<9;c++){
+if(values[r][c]!==solution[r].charAt(c)) return false;
+}}
+return true;
+}
+
+function flashCell(cell,cls,ms){
+cell.classList.add(cls);
+setTimeout(function(){cell.classList.remove(cls);},ms);
+}
+
+board.addEventListener("click",function(e){
+var cell=e.target.closest(".cell");if(!cell)return;
+var r=parseInt(cell.getAttribute("data-r"),10);
+var c=parseInt(cell.getAttribute("data-c"),10);
+if(isGiven(r,c)){
+status.textContent="Esa cifra ya viene dada.";
+selected=null;
+clearHighlights();
+return;
+}
+selected={r:r,c:c};
+highlight(r,c);
+status.textContent="Selecciona un número.";
+});
+
+pad.addEventListener("click",function(e){
+var btn=e.target.closest(".pad-btn");if(!btn||!selected)return;
+var n=btn.getAttribute("data-n");
+var r=selected.r,c=selected.c;
+var cell=document.querySelector('.cell[data-r="'+r+'"][data-c="'+c+'"]');
+if(!cell)return;
+
+if(n===solution[r].charAt(c)){
+values[r][c]=n;
+cell.textContent=n;
+flashCell(cell,"correct",1200);
+status.textContent="Correcto.";
+selected=null;
+clearHighlights();
+if(isComplete()){
+status.textContent="¡Muy bien! Has completado el sudoku.";
+reward.style.display="block";
+}
+}else{
+cell.textContent=n;
+flashCell(cell,"error",1200);
+status.textContent="Ese número no corresponde a la casilla.";
+setTimeout(function(){
+if(values[r][c]===""){cell.textContent="";}
+},1200);
+}
+});
+
+document.getElementById("resetBtn").onclick=function(){buildBoard();};
+
+buildBoard();
+buildPad();
+})();
+</script>
+</body>
+</html>
