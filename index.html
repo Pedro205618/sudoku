@@ -22,6 +22,24 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 #reward{display:none;margin-top:18px;padding:16px;border-radius:14px;background:rgba(226,241,215,.88);border:1px solid rgba(124,156,105,.5);line-height:1.45;text-align:center}
 .actions{margin-top:14px;display:flex;justify-content:center}
 .action-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#a67b45,#7f5c34);color:#fff8e8;padding:9px 16px;border-radius:999px;font-family:Georgia,"Times New Roman",serif;font-weight:700;cursor:pointer}
+.levels{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:0 0 18px;
+}
+
+.level-btn{
+  border:1px solid #6f4f2c;
+  background:linear-gradient(180deg,#a67b45,#7f5c34);
+  color:#fff8e8;
+  padding:8px 16px;
+  border-radius:999px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+  cursor:pointer;
+}
 @media(max-width:640px){body{padding:8px}#sudoku{padding:12px}#board{width:100%;max-width:520px}.cell{font-size:1.05rem}.pad-btn{height:52px;font-size:1.3rem}}
 </style>
 </head>
@@ -29,6 +47,11 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 <div id="sudoku">
 <h2>Sudoku literario</h2>
 <p class="sub">Nivel fácil · Selecciona una casilla y elige un número.</p>
+<div class="levels">
+  <button class="level-btn" data-level="easy" type="button">Fácil</button>
+  <button class="level-btn" data-level="medium" type="button">Medio</button>
+  <button class="level-btn" data-level="hard" type="button">Difícil</button>
+</div>
 <div id="board"></div>
 <div id="pad"></div>
 <div id="status">Selecciona una casilla vacía y luego un número.</div>
@@ -46,29 +69,38 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 var board=document.getElementById("board"),pad=document.getElementById("pad"),status=document.getElementById("status"),reward=document.getElementById("reward");
 var selected=null,values=[];
 
-var puzzle=[
-"530070000",
-"600195000",
-"098000060",
-"800060003",
-"400803001",
-"700020006",
-"060000280",
-"000419005",
-"000080079"
-];
+var PUZZLES = {
+  easy: {
+    name: "Fácil",
+    puzzle: [
+      "530070000",
+      "600195000",
+      "098000060",
+      "800060003",
+      "400803001",
+      "700020006",
+      "060000280",
+      "000419005",
+      "000080079"
+    ],
+    solution: [
+      "534678912",
+      "672195348",
+      "198342567",
+      "859761423",
+      "426853791",
+      "713924856",
+      "961537284",
+      "287419635",
+      "345286179"
+    ],
+    reward: "Has completado el nivel fácil."
+  }
+};
 
-var solution=[
-"534678912",
-"672195348",
-"198342567",
-"859761423",
-"426853791",
-"713924856",
-"961537284",
-"287419635",
-"345286179"
-];
+var currentLevel = "easy";
+var puzzle = PUZZLES[currentLevel].puzzle;
+var solution = PUZZLES[currentLevel].solution;
 
 function buildBoard(){
 var html="",r,c,extra,n;
@@ -94,6 +126,13 @@ function buildPad(){
 var html="",i;
 for(i=1;i<=9;i++){html+='<button class="pad-btn" data-n="'+i+'">'+i+'</button>';}
 pad.innerHTML=html;
+}
+
+function loadLevel(level){
+  currentLevel = level;
+  puzzle = PUZZLES[currentLevel].puzzle;
+  solution = PUZZLES[currentLevel].solution;
+  buildBoard();
 }
 
 function clearHighlights(){
@@ -194,6 +233,21 @@ if(values[r][c]===""){cell.textContent="";}
 
 document.getElementById("resetBtn").onclick=function(){buildBoard();};
 
+var levelButtons = document.querySelectorAll(".level-btn");
+
+for(var i = 0; i < levelButtons.length; i++){
+  levelButtons[i].onclick = function(){
+    var level = this.getAttribute("data-level");
+
+    if(!PUZZLES[level]){
+      status.textContent = "Ese nivel todavía no está disponible.";
+      return;
+    }
+
+    loadLevel(level);
+  };
+}
+  
 buildBoard();
 buildPad();
 })();
