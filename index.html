@@ -368,9 +368,14 @@ if(saved && saved.values){
     }
   }
 
-  if(saved.completed){
-    showReward();
+if(saved.completed){
+  status.textContent = "¡Muy bien! Has completado el sudoku.";
+  showReward();
+
+  if(currentVariant === 0){
+    document.getElementById("continueBtn").style.display = "inline-block";
   }
+}
 }
 document.getElementById("continueBtn").style.display = "none";
 reward.style.display="none";
