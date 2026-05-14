@@ -350,6 +350,27 @@ if(n!=="0"){extra+=" given";}
 html+='<div class="cell'+extra+'" data-r="'+r+'" data-c="'+c+'">'+(n==="0"?"":n)+'</div>';
 }}
 board.innerHTML=html;
+
+var saved = loadCurrentProgress();
+
+if(saved && saved.values){
+  values = saved.values;
+
+  for(var rr=0; rr<9; rr++){
+    for(var cc=0; cc<9; cc++){
+      if(values[rr][cc] !== ""){
+        var savedCell = document.querySelector('.cell[data-r="'+rr+'"][data-c="'+cc+'"]');
+        if(savedCell){
+          savedCell.textContent = values[rr][cc];
+        }
+      }
+    }
+  }
+
+  if(saved.completed){
+    showReward();
+  }
+}
 reward.style.display="none";
 selected=null;
 document.getElementById("continueBtn").style.display = "none";
@@ -472,6 +493,7 @@ if(!cell)return;
 if(n===solution[r].charAt(c)){
 values[r][c]=n;
 cell.textContent=n;
+saveCurrentProgress();
 flashCell(cell,"correct",1200);
 status.textContent="Correcto.";
 selected=null;
@@ -494,7 +516,10 @@ if(values[r][c]===""){cell.textContent="";}
 }
 });
 
-document.getElementById("resetBtn").onclick=function(){buildBoard();};
+document.getElementById("resetBtn").onclick=function(){
+  clearCurrentProgress();
+  buildBoard();
+};
 
 var levelButtons = document.querySelectorAll(".level-btn");
 
