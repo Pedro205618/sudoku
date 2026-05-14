@@ -20,6 +20,16 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 .pad-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#fffdf8,#ece0c5);color:#3e2d1f;border-radius:12px;height:58px;font-size:1.5rem;font-weight:700;cursor:pointer;font-family:Georgia,"Times New Roman",serif}
 #status{margin-top:18px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(90,66,41,.25);text-align:center;font-weight:700;min-height:24px}
 #reward{display:none;margin-top:18px;padding:16px;border-radius:14px;background:rgba(226,241,215,.88);border:1px solid rgba(124,156,105,.5);line-height:1.45;text-align:center}
+#rewardImageWrap{
+  margin-top:14px;
+  text-align:center;
+}
+#rewardImage{
+  max-width:180px;
+  width:100%;
+  border-radius:10px;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
 .actions{margin-top:14px;display:flex;justify-content:center}
 .action-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#a67b45,#7f5c34);color:#fff8e8;padding:9px 16px;border-radius:999px;font-family:Georgia,"Times New Roman",serif;font-weight:700;cursor:pointer}
 .levels{
@@ -56,9 +66,12 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 <div id="pad"></div>
 <div id="status">Selecciona una casilla vacía y luego un número.</div>
 <div id="reward">
-  <p><strong>¡Muy bien! Has completado el sudoku.</strong></p>
-  <p>“La atención es la forma más rara y pura de generosidad.”</p>
-  <p><em>Simone Weil</em></p>
+  <p><strong id="rewardTitle">¡Muy bien! Has completado el sudoku.</strong></p>
+  <p id="rewardQuote"></p>
+  <p><em id="rewardAuthor"></em></p>
+  <div id="rewardImageWrap" style="display:none;">
+    <img id="rewardImage" src="" alt="Imagen de recompensa">
+  </div>
 </div>
 <div class="actions">
   <button class="action-btn" id="resetBtn" type="button">Comenzar de nuevo</button>
@@ -371,6 +384,22 @@ if(values[r][c]!==solution[r].charAt(c)) return false;
 return true;
 }
 
+function showReward(){
+  var data = PUZZLES[currentLevel].variants[currentVariant].reward;
+
+  document.getElementById("rewardQuote").textContent = data.quote || "";
+  document.getElementById("rewardAuthor").textContent = data.author || "";
+
+  if(data.image){
+    document.getElementById("rewardImage").src = data.image;
+    document.getElementById("rewardImageWrap").style.display = "block";
+  }else{
+    document.getElementById("rewardImage").src = "";
+    document.getElementById("rewardImageWrap").style.display = "none";
+  }
+
+  showReward();
+}
 function flashCell(cell,cls,ms){
 cell.classList.add(cls);
 setTimeout(function(){cell.classList.remove(cls);},ms);
