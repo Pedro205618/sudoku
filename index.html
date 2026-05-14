@@ -86,6 +86,7 @@ var board=document.getElementById("board"),
     reward=document.getElementById("reward"),
     subtitle=document.getElementById("subtitle");
 var selected=null,values=[];
+var STORAGE_KEY="sudoku_literario_progreso_v1";
 
 var PUZZLES = {
   easy: {
@@ -292,6 +293,48 @@ var currentVariant = 0;
 
 var puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
 var solution = PUZZLES[currentLevel].variants[currentVariant].solution;
+
+function progressKey(){
+  return currentLevel + "_" + (currentVariant + 1);
+}
+
+function loadAllProgress(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {};
+    var data = JSON.parse(raw);
+    return data || {};
+  }catch(e){
+    return {};
+  }
+}
+
+function saveCurrentProgress(){
+  var all = loadAllProgress();
+
+  all[progressKey()] = {
+    values: values,
+    completed: isComplete()
+  };
+
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  }catch(e){}
+}
+
+function loadCurrentProgress(){
+  var all = loadAllProgress();
+  return all[progressKey()] || null;
+}
+
+function clearCurrentProgress(){
+  var all = loadAllProgress();
+  delete all[progressKey()];
+
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  }catch(e){}
+}
 
 function buildBoard(){
 var html="",r,c,extra,n;
