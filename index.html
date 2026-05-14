@@ -62,8 +62,10 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
   <button class="level-btn" data-level="medium" type="button">Medio</button>
   <button class="level-btn" data-level="hard" type="button">Difícil</button>
 </div>
-<div id="board"></div>
-<div id="pad"></div>
+<div id="gameWrap" style="display:none;">
+  <div id="board"></div>
+  <div id="pad"></div>
+</div>
 <div id="status">Selecciona una casilla vacía y luego un número.</div>
 <div id="reward">
   <p><strong id="rewardTitle">¡Muy bien! Has completado el sudoku.</strong></p>
@@ -384,6 +386,41 @@ for(i=1;i<=9;i++){html+='<button class="pad-btn" data-n="'+i+'">'+i+'</button>';
 pad.innerHTML=html;
 }
 
+function handleNumber(n){
+  if(!selected) return;
+
+  var r=selected.r;
+  var c=selected.c;
+  var cell=document.querySelector('.cell[data-r="'+r+'"][data-c="'+c+'"]');
+  if(!cell) return;
+
+  if(n===solution[r].charAt(c)){
+    values[r][c]=n;
+    cell.textContent=n;
+    saveCurrentProgress();
+    flashCell(cell,"correct",1200);
+    status.textContent="Correcto.";
+    selected=null;
+    clearHighlights();
+
+    if(isComplete()){
+      status.textContent="¡Muy bien! Has completado el sudoku.";
+      showReward();
+
+      if(currentVariant===0){
+        document.getElementById("continueBtn").style.display="inline-block";
+      }
+    }
+  }else{
+    cell.textContent=n;
+    flashCell(cell,"error",1200);
+    status.textContent="Ese número no corresponde a la casilla.";
+    setTimeout(function(){
+      if(values[r][c]===""){cell.textContent="";}
+    },1200);
+  }
+}
+  
 function loadLevel(level){
   currentLevel = level;
   currentVariant = 0;
@@ -395,7 +432,7 @@ function loadLevel(level){
     "Nivel " +
     PUZZLES[currentLevel].name.toLowerCase() +
     " (1) · Selecciona una casilla y elige un número.";
-
+  document.getElementById("gameWrap").style.display = "block";
   buildBoard();
 }
 
@@ -484,38 +521,15 @@ status.textContent="Selecciona un número.";
 });
 
 pad.addEventListener("click",function(e){
-var btn=e.target.closest(".pad-btn");if(!btn||!selected)return;
-var n=btn.getAttribute("data-n");
-var r=selected.r,c=selected.c;
-var cell=document.querySelector('.cell[data-r="'+r+'"][data-c="'+c+'"]');
-if(!cell)return;
-
-if(n===solution[r].charAt(c)){
-values[r][c]=n;
-cell.textContent=n;
-saveCurrentProgress();
-flashCell(cell,"correct",1200);
-status.textContent="Correcto.";
-selected=null;
-clearHighlights();
-if(isComplete()){
-  status.textContent="¡Muy bien! Has completado el sudoku.";
-  reward.style.display="block";
-
-  if(currentVariant === 0){
-    document.getElementById("continueBtn").style.display = "inline-block";
-  }
-}
-}else{
-cell.textContent=n;
-flashCell(cell,"error",1200);
-status.textContent="Ese número no corresponde a la casilla.";
-setTimeout(function(){
-if(values[r][c]===""){cell.textContent="";}
-},1200);
-}
+  var btn=e.target.closest(".pad-btn");
+  if(!btn) return;
+  handleNumber(btn.getAttribute("data-n"));
 });
-
+document.addEventListener("keydown",function(e){
+  if(e.key>="1" && e.key<="9"){
+    handleNumber(e.key);
+  }
+});
 document.getElementById("resetBtn").onclick=function(){
   clearCurrentProgress();
   buildBoard();
@@ -550,7 +564,6 @@ document.getElementById("continueBtn").onclick=function(){
   buildBoard();
 };
   
-buildBoard();
 buildPad();
 })();
 </script>
