@@ -404,6 +404,7 @@ function handleNumber(n){
     selected=null;
     clearHighlights();
 
+    console.log("¿Completo?", isComplete());
     if(isComplete()){
       status.textContent="¡Muy bien! Has completado el sudoku.";
       showReward();
