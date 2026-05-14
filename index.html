@@ -338,51 +338,55 @@ function clearCurrentProgress(){
 }
 
 function buildBoard(){
-var html="",r,c,extra,n;
-values=[];
-for(r=0;r<9;r++){
-values[r]=[];
-for(c=0;c<9;c++){
-n=puzzle[r].charAt(c);
-values[r][c]=n==="0"?"":n;
-extra="";
-if(r===2||r===5){extra+=" row-end";}
-if(n!=="0"){extra+=" given";}
-html+='<div class="cell'+extra+'" data-r="'+r+'" data-c="'+c+'">'+(n==="0"?"":n)+'</div>';
-}}
-board.innerHTML=html;
+  var html="",r,c,extra,n;
+  values=[];
+  selected=null;
 
-var saved = loadCurrentProgress();
+  reward.style.display="none";
+  document.getElementById("continueBtn").style.display="none";
+  status.textContent="Selecciona una casilla vacía y luego un número.";
 
-if(saved && saved.values){
-  values = saved.values;
+  for(r=0;r<9;r++){
+    values[r]=[];
+    for(c=0;c<9;c++){
+      n=puzzle[r].charAt(c);
+      values[r][c]=n==="0"?"":n;
+      extra="";
+      if(r===2||r===5){extra+=" row-end";}
+      if(n!=="0"){extra+=" given";}
+      html+='<div class="cell'+extra+'" data-r="'+r+'" data-c="'+c+'">'+(n==="0"?"":n)+'</div>';
+    }
+  }
 
-  for(var rr=0; rr<9; rr++){
-    for(var cc=0; cc<9; cc++){
-      if(values[rr][cc] !== ""){
-        var savedCell = document.querySelector('.cell[data-r="'+rr+'"][data-c="'+cc+'"]');
-        if(savedCell){
-          savedCell.textContent = values[rr][cc];
+  board.innerHTML=html;
+
+  var saved = loadCurrentProgress();
+
+  if(saved && saved.values){
+    values = saved.values;
+
+    for(var rr=0; rr<9; rr++){
+      for(var cc=0; cc<9; cc++){
+        if(values[rr][cc] !== ""){
+          var savedCell = document.querySelector('.cell[data-r="'+rr+'"][data-c="'+cc+'"]');
+          if(savedCell){
+            savedCell.textContent = values[rr][cc];
+          }
         }
+      }
+    }
+
+    if(saved.completed){
+      status.textContent = "¡Muy bien! Has completado el sudoku.";
+      showReward();
+
+      if(currentVariant === 0){
+        document.getElementById("continueBtn").style.display = "inline-block";
       }
     }
   }
 
-if(saved.completed){
-  status.textContent = "¡Muy bien! Has completado el sudoku.";
-  showReward();
-
-  if(currentVariant === 0){
-    document.getElementById("continueBtn").style.display = "inline-block";
-  }
-}
-
-document.getElementById("continueBtn").style.display = "none";
-reward.style.display="none";
-selected=null;
-
-clearHighlights();
-status.textContent="Selecciona una casilla vacía y luego un número.";
+  clearHighlights();
 }
 
 function buildPad(){
