@@ -307,14 +307,15 @@ pad.innerHTML=html;
 
 function loadLevel(level){
   currentLevel = level;
+  currentVariant = 0;
 
-  puzzle = PUZZLES[currentLevel].puzzle;
-  solution = PUZZLES[currentLevel].solution;
+  puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
+  solution = PUZZLES[currentLevel].variants[currentVariant].solution;
 
   subtitle.textContent =
     "Nivel " +
     PUZZLES[currentLevel].name.toLowerCase() +
-    " · Selecciona una casilla y elige un número.";
+    " (1) · Selecciona una casilla y elige un número.";
 
   buildBoard();
 }
