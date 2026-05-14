@@ -373,9 +373,10 @@ if(saved && saved.values){
     showReward();
   }
 }
+document.getElementById("continueBtn").style.display = "none";
 reward.style.display="none";
 selected=null;
-document.getElementById("continueBtn").style.display = "none";
+
 clearHighlights();
 status.textContent="Selecciona una casilla vacía y luego un número.";
 }
