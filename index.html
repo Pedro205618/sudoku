@@ -404,7 +404,6 @@ function handleNumber(n){
     selected=null;
     clearHighlights();
 
-    console.log("¿Completo?", isComplete());
     if(isComplete()){
       status.textContent="¡Muy bien! Has completado el sudoku.";
       showReward();
@@ -501,7 +500,7 @@ function showReward(){
     document.getElementById("rewardImageWrap").style.display = "none";
   }
 
-  showReward();
+  reward.style.display = "block";
 }
 function flashCell(cell,cls,ms){
 cell.classList.add(cls);
