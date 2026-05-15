@@ -432,7 +432,15 @@ function handleNumber(n){
   
 function loadLevel(level){
   currentLevel = level;
-  currentVariant = 0;
+
+  var all = loadAllProgress();
+  var firstKey = currentLevel + "_1";
+
+  if(all[firstKey] && all[firstKey].completed){
+    currentVariant = 1;
+  }else{
+    currentVariant = 0;
+  }
 
   puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
   solution = PUZZLES[currentLevel].variants[currentVariant].solution;
@@ -440,8 +448,10 @@ function loadLevel(level){
   subtitle.textContent =
     "Nivel " +
     PUZZLES[currentLevel].name.toLowerCase() +
-    " (1) · Selecciona una casilla y elige un número.";
+    " (" + (currentVariant + 1) + ") · Selecciona una casilla y elige un número.";
+
   document.getElementById("gameWrap").style.display = "block";
+
   buildBoard();
 }
 
