@@ -643,23 +643,28 @@ document.getElementById("resetBtn").onclick=function(){
 
   var saved = loadCurrentProgress();
 
-  if(saved && saved.completed && currentVariant === 1){
+if(saved && saved.completed && currentVariant === 1){
+  clearCurrentProgress(); // borra variante 2
 
-    clearCurrentProgress();
+  currentVariant = 0;
 
-    currentVariant = 0;
+  puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
+  solution = PUZZLES[currentLevel].variants[currentVariant].solution;
 
-    puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
-    solution = PUZZLES[currentLevel].variants[currentVariant].solution;
+  clearCurrentProgress(); // borra variante 1
 
-    subtitle.textContent =
-      "Nivel " +
-      PUZZLES[currentLevel].name.toLowerCase() +
-      " (1) · Selecciona una casilla y elige un número.";
+  attempts = 0;
+  correctAttempts = 0;
+  document.getElementById("stats").style.display = "none";
+  pad.style.display = "grid";
 
-    buildBoard();
+  subtitle.textContent =
+    "Nivel " +
+    PUZZLES[currentLevel].name.toLowerCase() +
+    " (1) · Selecciona una casilla y elige un número.";
 
-  }else{
+  buildBoard();
+}else{
 
     clearCurrentProgress();
     buildBoard();
