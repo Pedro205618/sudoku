@@ -330,9 +330,11 @@ function saveCurrentProgress(){
   var all = loadAllProgress();
 
   all[progressKey()] = {
-    values: values,
-    completed: isComplete()
-  };
+  values: values,
+  completed: isComplete(),
+  attempts: attempts,
+  correctAttempts: correctAttempts
+};
 
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
