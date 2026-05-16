@@ -533,6 +533,8 @@ function loadLevel(level){
   puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
   solution = PUZZLES[currentLevel].variants[currentVariant].solution;
 
+  clearCurrentProgress();
+  
   subtitle.textContent =
     "Nivel " +
     PUZZLES[currentLevel].name.toLowerCase() +
