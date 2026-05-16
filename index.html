@@ -394,7 +394,36 @@ function buildBoard(){
     }
 
     if(saved.completed){
-      status.textContent = "¡Muy bien! Has completado el sudoku.";
+
+      var percent = Math.round((correctAttempts / attempts) * 100);
+      var errors = attempts - correctAttempts;
+
+      var label = "";
+
+      if(percent === 100){
+        label = "¡Excelente!";
+      }else if(percent > 90){
+        label = "¡Muy bien!";
+      }else if(percent >= 80){
+        label = "Bastante bien.";
+      }else if(percent >= 70){
+        label = "No está mal.";
+      }else{
+        label = "Puedes hacerlo mejor.";
+      }
+
+      status.textContent = label + " Has completado el sudoku.";
+
+      document.getElementById("stats").innerHTML =
+        "<strong>Intentos:</strong> " + attempts + "<br>" +
+        "<strong>Aciertos:</strong> " + correctAttempts +
+        " (" + percent + "%)<br>" +
+        "<strong>Errores:</strong> " + errors;
+
+      document.getElementById("stats").style.display = "block";
+
+      pad.style.display = "none";
+
       showReward();
 
       if(currentVariant === 0){
