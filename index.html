@@ -484,7 +484,12 @@ function handleNumber(n){
     }else{
       label = "Puedes hacerlo mejor.";
     }
-
+    
+    subtitle.textContent =
+      "Nivel " +
+      PUZZLES[currentLevel].name.toLowerCase() +
+      " (" + (currentVariant + 1) + ")";
+    
     status.textContent = label + " Has completado el sudoku.";
 
     document.getElementById("stats").innerHTML =
@@ -633,8 +638,30 @@ document.addEventListener("keydown",function(e){
   }
 });
 document.getElementById("resetBtn").onclick=function(){
-  clearCurrentProgress();
-  buildBoard();
+
+  var saved = loadCurrentProgress();
+
+  if(saved && saved.completed && currentVariant === 1){
+
+    clearCurrentProgress();
+
+    currentVariant = 0;
+
+    puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
+    solution = PUZZLES[currentLevel].variants[currentVariant].solution;
+
+    subtitle.textContent =
+      "Nivel " +
+      PUZZLES[currentLevel].name.toLowerCase() +
+      " (1) · Selecciona una casilla y elige un número.";
+
+    buildBoard();
+
+  }else{
+
+    clearCurrentProgress();
+    buildBoard();
+  }
 };
 
 var levelButtons = document.querySelectorAll(".level-btn");
