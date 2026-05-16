@@ -359,7 +359,8 @@ function buildBoard(){
   var html="",r,c,extra,n;
   values=[];
   selected=null;
-
+  attempts = 0;
+  correctAttempts = 0;
   reward.style.display="none";
   document.getElementById("continueBtn").style.display="none";
   status.textContent="Selecciona una casilla vacía y luego un número.";
@@ -382,18 +383,22 @@ function buildBoard(){
   var saved = loadCurrentProgress();
 
   if(saved && saved.values){
-    values = saved.values;
 
-    for(var rr=0; rr<9; rr++){
-      for(var cc=0; cc<9; cc++){
-        if(values[rr][cc] !== ""){
-          var savedCell = document.querySelector('.cell[data-r="'+rr+'"][data-c="'+cc+'"]');
-          if(savedCell){
-            savedCell.textContent = values[rr][cc];
-          }
+  attempts = saved.attempts || 0;
+  correctAttempts = saved.correctAttempts || 0;
+
+  values = saved.values;
+
+  for(var rr=0; rr<9; rr++){
+    for(var cc=0; cc<9; cc++){
+      if(values[rr][cc] !== ""){
+        var savedCell = document.querySelector('.cell[data-r="'+rr+'"][data-c="'+cc+'"]');
+        if(savedCell){
+          savedCell.textContent = values[rr][cc];
         }
       }
     }
+  }
 
     if(saved.completed){
 
