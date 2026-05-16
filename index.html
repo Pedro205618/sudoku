@@ -430,14 +430,15 @@ function handleNumber(n){
     selected=null;
     clearHighlights();
 
-    if(isComplete()){
-      status.textContent="¡Muy bien! Has completado el sudoku.";
-      showReward();
+  if(isComplete()){
+    status.textContent="¡Muy bien! Has completado el sudoku.";
+    pad.style.display="none";
+    showReward();
 
-      if(currentVariant===0){
-        document.getElementById("continueBtn").style.display="inline-block";
-      }
+    if(currentVariant===0){
+      document.getElementById("continueBtn").style.display="inline-block";
     }
+  }
   }else{
     cell.textContent=n;
     flashCell(cell,"error",1200);
