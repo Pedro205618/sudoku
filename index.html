@@ -19,6 +19,15 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
 #pad{max-width:280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .pad-btn{border:1px solid #6f4f2c;background:linear-gradient(180deg,#fffdf8,#ece0c5);color:#3e2d1f;border-radius:12px;height:58px;font-size:1.5rem;font-weight:700;cursor:pointer;font-family:Georgia,"Times New Roman",serif}
 #status{margin-top:18px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(90,66,41,.25);text-align:center;font-weight:700;min-height:24px}
+#stats{
+  margin-top:16px;
+  padding:14px;
+  border-radius:12px;
+  background:rgba(255,255,255,.45);
+  border:1px solid rgba(90,66,41,.25);
+  text-align:center;
+  line-height:1.5;
+}
 #reward{display:none;margin-top:18px;padding:16px;border-radius:14px;background:rgba(226,241,215,.88);border:1px solid rgba(124,156,105,.5);line-height:1.45;text-align:center}
 #rewardImageWrap{
   margin-top:14px;
@@ -67,7 +76,7 @@ h2{text-align:center;margin:0 0 8px;color:#6f4f2c}.sub{text-align:center;margin:
   <div id="pad"></div>
 </div>
 <div id="status">Selecciona una casilla vacía y luego un número.</div>
-<div id="reward">
+<div id="stats" style="display:none;"></div>
   <p id="rewardQuote"></p>
   <p><em id="rewardAuthor"></em></p>
   <div id="rewardImageWrap" style="display:none;">
@@ -87,6 +96,8 @@ var board=document.getElementById("board"),
     reward=document.getElementById("reward"),
     subtitle=document.getElementById("subtitle");
 var selected=null,values=[];
+var attempts=0;
+var correctAttempts=0;
 var STORAGE_KEY="sudoku_literario_progreso_v1";
 
 var PUZZLES = {
@@ -345,7 +356,8 @@ function buildBoard(){
   reward.style.display="none";
   document.getElementById("continueBtn").style.display="none";
   status.textContent="Selecciona una casilla vacía y luego un número.";
-
+  document.getElementById("stats").style.display="none";
+  pad.style.display="grid";
   for(r=0;r<9;r++){
     values[r]=[];
     for(c=0;c<9;c++){
@@ -402,9 +414,10 @@ function handleNumber(n){
   var c=selected.c;
   var cell=document.querySelector('.cell[data-r="'+r+'"][data-c="'+c+'"]');
   if(!cell) return;
-
+  attempts++;
   if(n===solution[r].charAt(c)){
     values[r][c]=n;
+    correctAttempts++;
     cell.textContent=n;
     saveCurrentProgress();
     flashCell(cell,"correct",1200);
