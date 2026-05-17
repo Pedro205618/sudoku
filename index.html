@@ -406,7 +406,6 @@ function buildBoard(){
       var errors = attempts - correctAttempts;
 
       var label = "";
-
       if(percent === 100){
         label = "¡Excelente!";
       }else if(percent > 90){
@@ -419,6 +418,11 @@ function buildBoard(){
         label = "Puedes hacerlo mejor.";
       }
 
+      subtitle.textContent =
+        "Nivel " +
+        PUZZLES[currentLevel].name.toLowerCase() +
+        " (" + (currentVariant + 1) + ")";
+      
       status.textContent = label + " Has completado el sudoku.";
 
       document.getElementById("stats").innerHTML =
@@ -512,6 +516,9 @@ function handleNumber(n){
     cell.textContent=n;
     flashCell(cell,"error",1200);
     status.textContent="Ese número no corresponde a la casilla.";
+
+    saveCurrentProgress();
+    
     setTimeout(function(){
       if(values[r][c]===""){cell.textContent="";}
     },1200);
@@ -532,8 +539,6 @@ function loadLevel(level){
 
   puzzle = PUZZLES[currentLevel].variants[currentVariant].puzzle;
   solution = PUZZLES[currentLevel].variants[currentVariant].solution;
-
-  clearCurrentProgress();
   
   subtitle.textContent =
     "Nivel " +
